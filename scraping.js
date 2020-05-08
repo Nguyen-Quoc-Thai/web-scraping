@@ -5,7 +5,7 @@ var cheerio = require('cheerio');
 
 var axios = require('axios');
 
-async function apiAddArticle(url, data){
+function apiAddArticle(url, data){
     axios.post(url, data)
         .then(function () {
             console.log("Add successed");
@@ -20,21 +20,21 @@ request('https://thanhnien.vn/tin-tuc/covid-19.html', (error, response, html) =>
         const $ = cheerio.load(html);
         var api_secret = process.env.API_SECRET;
 
-        $('.relative').find('.story').each((i, el) => {
-            if (el) {
-                var image = $(el).find('a').find('img').attr('data-src');
-                var header = $(el).find('h2').find('.story__title').text();
-                var meta = $(el).find('.meta').find('.timebox').text();
-                var summary = $(el).find('.summary').find('div').text();
+        $('.relative').find('.story').each((index, story) => {
+            if (story) {
+                var image = $(story).find('a').find('img').attr('data-src');
+                var link = $(story).find('a').attr('href');
+                var header = $(story).find('h2').find('.story__title').text();
+                var meta = $(story).find('.meta').find('.timebox').text();
+                var summary = $(story).find('.summary').find('div').text();
 
-                var data = {
+                apiAddArticle(api_secret, {
                     image,
+                    link,
                     header,
                     meta,
                     summary
-                };
-
-                apiAddArticle(api_secret, data);
+                });
             }
         })
     } else {
